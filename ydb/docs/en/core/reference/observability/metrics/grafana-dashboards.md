@@ -100,7 +100,7 @@ Download the **Actors** dashboard template: [actors.json](https://raw.githubuser
 
 ## CPU {#cpu}
 
-CPU consumption in [execution pools](../../../devops/configuration-management/configuration-v2/config-settings.md#tuneconfig).
+CPU consumption in [execution pools](../../../reference/configuration/actor_system_config.md#tuneconfig).
 
 | Name | Description |
 | --- | --- |

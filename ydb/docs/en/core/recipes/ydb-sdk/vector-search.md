@@ -1,11 +1,10 @@
-# Vector search
+# Vector search {#vector-search}
 
 This section contains code recipes in various programming languages for solving [vector search](../../concepts/query_execution/vector_search.md) tasks using the {{ ydb-short-name }} SDK.
 
 The operations will be covered in detail:
 
-- [Vector search](#vector-search)
-
+- Vector search
   - [Connecting to {{ ydb-short-name }}](#connect-ydb)
   - [Creating a table](#create-table)
   - [Inserting vectors](#insert-vectors)
@@ -1033,7 +1032,7 @@ Available strategies:
 * `distance=euclidean`;
 * `distance=manhattan`.
 
-Each strategy defines the function that will be used for subsequent search. The functions are described in more detail in the documentation on [distance and similarity functions](../../yql/reference/udf/list/knn.md#fuctions-distance).
+Each strategy defines the function that will be used for subsequent search. The functions are described in more detail in the documentation on [distance and similarity functions](../../yql/reference/udf/list/knn.md#functions-distance).
 
 The parameters used when creating an index of type `vector_kmeans_tree` are described in the [vector index](../../dev/vector-indexes.md#kmeans-tree-type) documentation.
 
