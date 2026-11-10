@@ -56,7 +56,7 @@ Caveats учёта:
 |--:|-------:|:--------|-------|-----------------------------|
 | 1 | ~2845 | да | `library/actors/core/ut` | вынести/облегчить benchmark+performance |
 | 2 | ~2244 | partial | `core/kqp/ut/query` | `ManyPartitions*` 1k–5k → десятки |
-| 3 | ~2056 | partial | `tests/stress/topic/tests` | cpu:8 или кап partitions; развести 50K-сценарий |
+| 3 | ~2056 | partial | `tests/stress/topic/tests` | кап partitions/consumers (MEDIUM ≤cpu:4); развести 50K-сценарий |
 | 4 | ~1885 | да | `tests/functional/nbs` | session cluster / меньше erasure / io_depth |
 | 5 | ~1693 | да | `library/nmslib/.../run_test_integr` | сузить `threadQty` matrix в PR |
 | 6 | ~1582 | да | `tests/functional/kqp/kqp_indexes` | LocalExecutor / Sleep / erasure |
@@ -143,12 +143,12 @@ Caveats учёта:
 ### `ydb/tests/stress/topic/tests` — ~2.1×, ~220s
 
 - 1 node, реальный stress; 20 producers / 50 consumer threads / **200 partitions**; 3 сценария × 60s. Hot ~6–7c ~145s, потом тихий хвост 50K byte_rate (~1c) раздувает mean. Ratio = peak/mean.
-- **Сделать:** `cpu:8` или кап partitions/consumer_threads в CI; лёгкий 50K-сценарий не в одном 60s-слоте с 10M.
+- **Сделать:** кап partitions/consumer_threads (MEDIUM слот ≤ `cpu:4`); лёгкий 50K-сценарий не в одном 60s-слоте с 10M.
 
 ### `ydb/tests/stress/topic_kafka/tests` — ~2.0×, ~113s
 
 - Steady ~6.5–8.3c минуту, потом idle ~35s при живом кластере. Mean≈report; ratio от idle tail.
-- **Сделать:** слот по cgroup peak; рвать cluster сразу после `join()`.
+- **Сделать:** слот ≤ `cpu:4` (MEDIUM); рвать cluster сразу после `join()`; кап нагрузки если peak всё ещё выше.
 
 ### `ydb/core/kqp/ut/query` — ~1.4×, hot ch ~409s
 
@@ -276,7 +276,8 @@ Caveats учёта:
 5. `SPLIT_FACTOR` ≈ числу реальных кейсов, не «с запасом 60».
 6. Перед снижением `REQUIREMENTS(cpu)` — cgroup peak и critical path wall.
 7. `SIZE(MEDIUM/SMALL)` cap на dashboard ≠ реальная нагрузка: смотреть `recommended_cpu_base` / cgroup max.
-8. Не поднимать слот «поверх» плохого теста: сначала урезать пик, потом выставлять `cpu` под новый peak.
+8. Для `SIZE(MEDIUM)` в ya.make **не ставить `cpu` > 4** (и для SMALL — >1): слот режется политикой SIZE; чинить пик нагрузкой, не `cpu:8`.
+9. Не поднимать слот «поверх» плохого теста: сначала урезать пик, потом выставлять `cpu` под новый peak (в пределах SIZE).
 9. Shared harness: не включать PQ/полный gRPC/8–9 нод «по умолчанию», если сценарий этого не требует.
 
 ---
@@ -308,9 +309,9 @@ Caveats учёта:
 
 **Partial:**
 - [ ] kqp/ut/query ManyPartitions: меньше шардов
-- [ ] stress/topic: cpu:8 или кап partitions; развести лёгкий сценарий
+- [ ] stress/topic: кап partitions (MEDIUM ≤cpu:4); развести лёгкий сценарий
 - [ ] conveyor_composite: меньше tasks / setup под workers
-- [ ] stress/topic_kafka: слот по peak; teardown сразу
+- [ ] stress/topic_kafka: ≤cpu:4 + teardown сразу
 - [ ] SQS large + migration large: poll + shared cluster
 - [ ] SQS multinode family: SPLIT≈N, cpu:4, shared cluster
 - [ ] util/ut lf_stack: iteration limit
