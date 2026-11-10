@@ -6,7 +6,7 @@ TEST_SRCS(
 )
 
 SIZE(MEDIUM)
-REQUIREMENTS(ram:32 cpu:8)
+REQUIREMENTS(ram:32 cpu:4)
 
 PEERDIR(
     ydb/tests/library
