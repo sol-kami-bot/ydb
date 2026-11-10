@@ -62,12 +62,12 @@ Functions for ASCII strings:
 
 * `String::AsciiToTitle(String{Flags:AutoMap}) -> String`: Changes only Latin characters. For working with other alphabets, see Unicode::ToTitle
 
-* Signature:
+* `String::SplitToList` {#splittolist}
 
   ```text
   String::SplitToList( String?, String,
   [ DelimeterString:Bool?, SkipEmpty:Bool?, Limit:Uint64? ]) -> List<String>
-  ``` {#splittolist}
+  ```
 
   The first argument is the source string
   The second argument is a delimiter

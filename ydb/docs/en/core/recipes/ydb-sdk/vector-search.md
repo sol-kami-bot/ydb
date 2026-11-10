@@ -1304,7 +1304,7 @@ Available values:
 * `ManhattanDistance`
 * `EuclideanDistance`
 
-The functions are described in more detail in the documentation on [distance and similarity functions](../../yql/reference/udf/list/knn.md#fuctions-distance).
+The functions are described in more detail in the documentation on [distance and similarity functions](../../yql/reference/udf/list/knn.md#functions-distance).
 
 The method allows you to specify the index name. If it is set, the expression `VIEW index_name` will be added to the query, enabling the use of a vector index during search.
 

@@ -296,7 +296,7 @@ my/table/updates_feed
 
 The topic settings can be updated using the expression [ALTER TOPIC](../yql/reference/syntax/alter-topic.md). Supported actions:
 
-* [updating settings](../yql/reference/syntax/alter-topic.md#updating-topic-settings):
+* [updating settings](../yql/reference/syntax/alter-topic.md#alter-topic):
 
   * `retention_period`;
   * `retention_storage_mb`;

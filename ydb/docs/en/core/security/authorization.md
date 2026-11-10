@@ -48,12 +48,8 @@ For more information about initial deployment:
 
 {{ ydb-short-name }} allows working with [users](../concepts/glossary.md#access-user) from different directories and systems, and they are distinguished by [SID](../concepts/glossary.md#access-sid) using a suffix.
 
-The suffix `@<auth-domain>` identifies the “user source”, within which the uniqueness of all user logins or identifiers is guaranteed. For example, in the case of [LDAP authentication](authentication.md#ldap-auth-provider), user SIDs will be `user1@ldap` and `user2@ldap`.<br/>
-Local users have an empty auth-domain. If a user SID does not contain a suffix, it refers to a local user created and existing directly in the {{ ydb-short-name }} cluster.
-
-### SID {#sid}
-
-See [{#T}](../concepts/glossary.md#access-sid).
+The suffix `@<auth-domain>` identifies the “user source”, within which the uniqueness of all user logins or identifiers is guaranteed. For example, in the case of [LDAP authentication](authentication.md#ldap), user SIDs will be `user1@ldap` and `user2@ldap`.<br/>
+Local users have an empty auth-domain. If a user SID does not contain a suffix, it refers to a local user created and existing directly in the {{ ydb-short-name }} cluster. For the formal definition, see [{#T}](../concepts/glossary.md#access-sid).
 
 ## Group {#group}
 

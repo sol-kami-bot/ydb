@@ -78,7 +78,7 @@ For a detailed description of TLS parameters for monitoring, see the [monitoring
 
 ### LDAP
 
-{{ ydb-short-name }} supports [LDAP](../../security/authentication.md#ldap-auth-provider) for user authentication. The LDAP protocol has two options for enabling TLS.
+{{ ydb-short-name }} supports [LDAP](../../security/authentication.md#ldap) for user authentication. The LDAP protocol has two options for enabling TLS.
 
 Example of enabling TLS for LDAP via the `StartTls` protocol extension:
 
@@ -108,7 +108,7 @@ auth_config:
 ```
 
 
-For more details, this mechanism is described in [{#T}](../../devops/configuration-management/configuration-v1/#ldap-auth-config).
+For more details, this mechanism is described in [{#T}](../../reference/configuration/auth_config.md#ldap-auth-config).
 
 ### Federated queries
 

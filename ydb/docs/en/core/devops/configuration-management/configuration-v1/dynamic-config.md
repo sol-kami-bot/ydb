@@ -169,7 +169,7 @@ All commands for working with configuration are described in the [{#T}](../../..
 
 ## Implementation
 
-### Configuration Update from Administrator Perspective
+### Configuration Update from Administrator Perspective {#updating-dynamic-configuration}
 
 1. The configuration file is loaded by the user using a [grpc call](https://github.com/ydb-platform/ydb/blob/5251c9ace0a7617c25d50f1aa4d0f13e3d56f985/ydb/public/api/grpc/draft/ydb_dynamic_config_v1.proto#L22) or [{{ ydb-short-name }} CLI](../../../reference/ydb-cli/index.md) into the cluster.
 2. The file is checked for validity, basic constraints are checked, version correctness, cluster name correctness, correctness of configurations obtained after DSL transformation.

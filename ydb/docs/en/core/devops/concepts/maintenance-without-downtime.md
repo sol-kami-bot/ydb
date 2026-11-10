@@ -4,7 +4,7 @@ A {{ ydb-short-name }} cluster periodically needs maintenance, such as upgrading
 
 - Going beyond the expectations of the affected [storage groups](../../concepts/glossary.md#storage-group) failure model.
 - Going beyond the expectations of the [State Storage](../../reference/configuration/domains_config.md#domains-state) failure model.
-- Lack of computational resources due to stopping too many [dynamic nodes](../../concepts/glossary.md#dynamic-node).
+- Lack of computational resources due to stopping too many [dynamic nodes](../../concepts/glossary.md#dynamic).
 
 To avoid such situations, {{ ydb-short-name }} has a system [tablet](../../concepts/glossary.md#tablet) that monitors the state of the cluster - the *Cluster Management System (CMS)*. The CMS allows you to answer the question of whether a {{ ydb-short-name }} node or host running {{ ydb-short-name }} nodes can be safely taken out for maintenance. To do this, create a [maintenance task](#maintenance-task) in the CMS and specify in it to acquire exclusive locks on the nodes or hosts that will be involved in the maintenance. The cluster components on which the locks are acquired are considered unavailable from the CMS perspective and can be safely engaged in maintenance. The CMS will [check](#checking-algorithm) the current state of the cluster and acquire locks only if the maintenance complies with the [availability mode](#availability-mode) and [unavailable node limits](#unavailable-node-limits).
 
