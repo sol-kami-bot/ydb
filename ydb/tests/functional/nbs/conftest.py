@@ -3,7 +3,19 @@ import os
 
 import pytest
 
+from common import boot_nbs_cluster
+
 _DEFAULT_TIMEOUT = int(os.environ.get('PYTEST_TIMEOUT') or 60)
+
+
+@pytest.fixture(scope='session')
+def nbs_cluster():
+    """One cluster per pytest session (one SPLIT_FACTOR chunk)."""
+    cluster = boot_nbs_cluster()
+    try:
+        yield cluster
+    finally:
+        cluster.stop()
 
 
 def pytest_collection_modifyitems(items):

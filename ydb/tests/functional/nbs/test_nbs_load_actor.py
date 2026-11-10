@@ -72,13 +72,13 @@ class TestNbsLoadActor(NbsTestBase):
         actor_id = self.get_load_actor_adapter_actor_id(disk_id)
 
         # First run write-only load test
-        write_results = self.run_nbs_load_test(actor_id, write_rate=100, read_rate=0, duration=10)
+        write_results = self.run_nbs_load_test(actor_id, write_rate=100, read_rate=0)
 
         # Verify write results
         self.verify_load_test_results(write_results, expected_blocks_read=False, expected_blocks_written=True)
 
         # Then run read-only load test on the same disk
-        read_results = self.run_nbs_load_test(actor_id, write_rate=0, read_rate=100, duration=10)
+        read_results = self.run_nbs_load_test(actor_id, write_rate=0, read_rate=100)
 
         # Verify read results
         self.verify_load_test_results(read_results, expected_blocks_read=True, expected_blocks_written=False)

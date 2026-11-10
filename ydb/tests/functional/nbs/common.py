@@ -24,6 +24,46 @@ DEFAULT_DISK_BLOCKS_COUNT = 1048576
 DBG_LINK_RE = re.compile(r'page=dbg&dbg=(\d+)')
 PBUFFER_PB_RE = re.compile(r'persistent_buffer\?pb=([^"\'&\s]+)')
 
+NBS_DATABASE_NAME = "/Root/NBS"
+# DDisk geometry needs five fail domains. Rack differs per node, so five
+# nodes are enough. These cases assert disk IO, not mirror-3-dc placement.
+NBS_CLUSTER_NODES = 5
+
+
+def boot_nbs_cluster():
+    """Boot one NBS cluster. The session fixture shares it across a chunk."""
+    configurator = KikimrConfigGenerator(
+        erasure=Erasure.NONE,
+        nodes=NBS_CLUSTER_NODES,
+        enable_nbs=True,
+        nbs_database_name=NBS_DATABASE_NAME,
+        additional_log_configs={
+            'NBS_PARTITION': LogLevels.INFO,
+            'NBS2_LOAD_TEST': LogLevels.DEBUG,
+            'NBS_VOLUME': LogLevels.DEBUG,
+            'NBS_SS_PROXY': LogLevels.DEBUG,
+        },
+    )
+    # These load-actor/vhost tests are not limited to a single disk.
+    configurator.yaml_config['nbs_config']['nbs_frontend_config'] = {'enabled': False}
+    cluster = KiKiMR(configurator)
+    cluster.start()
+    logger.info("Creating NBS database: %s", NBS_DATABASE_NAME)
+    try:
+        cluster.create_database(
+            NBS_DATABASE_NAME, storage_pool_units_count={'hdd': NBS_CLUSTER_NODES}
+        )
+        logger.info("Registering and starting NBS dynamic slots...")
+        cluster.register_and_start_slots(NBS_DATABASE_NAME, count=1)
+        logger.info("Waiting for NBS tenant to be up...")
+        cluster.wait_tenant_up(NBS_DATABASE_NAME)
+        logger.info("NBS tenant is ready")
+    except Exception as e:
+        logger.error("Failed to start NBS tenant: %s", e)
+        cluster.stop()
+        raise
+    return cluster
+
 
 class NbsTestBase:
     """
@@ -31,49 +71,16 @@ class NbsTestBase:
     """
 
     ddisk_pool_name = "ddp1"
+    _ddisk_pool_ready = False
 
     @pytest.fixture(autouse=True)
-    def setup(self):
-        nbs_database_name = "/Root/NBS"
-        configurator = KikimrConfigGenerator(
-            erasure=Erasure.MIRROR_3_DC,
-            enable_nbs=True,
-            nbs_database_name=nbs_database_name,
-            additional_log_configs={
-                'NBS_PARTITION': LogLevels.INFO,
-                'NBS2_LOAD_TEST': LogLevels.DEBUG,
-                'NBS_VOLUME': LogLevels.DEBUG,
-                'NBS_SS_PROXY': LogLevels.DEBUG,
-            },
-        )
-        # These load-actor/vhost tests are not limited to a single disk.
-        configurator.yaml_config['nbs_config']['nbs_frontend_config'] = {'enabled': False}
-        self.cluster = KiKiMR(configurator)
-        self.cluster.start()
-        self.start_nbs(nbs_database_name)
-
+    def setup(self, nbs_cluster):
+        self.cluster = nbs_cluster
         yield
 
-        self.cluster.stop()
-
-    def start_nbs(self, nbs_database_name):
-        logger.info("Creating NBS database: %s", nbs_database_name)
-        self.cluster.create_database(nbs_database_name, storage_pool_units_count={'hdd': 9})
-
-        logger.info("Registering and starting NBS dynamic slots...")
-        slots = self.cluster.register_and_start_slots(nbs_database_name, count=1)
-
-        logger.info("Waiting for NBS tenant to be up...")
-        try:
-            self.cluster.wait_tenant_up(nbs_database_name)
-            logger.info("NBS tenant is ready")
-        except Exception as e:
-            logger.error("Failed to start NBS tenant: %s", e)
-            raise
-
-        return slots
-
     def create_ddisk_pool(self):
+        if NbsTestBase._ddisk_pool_ready:
+            return
         define_ddisk_pool = '''
             Command {{
                 DefineDDiskPool {{
@@ -101,6 +108,7 @@ class NbsTestBase:
         )
 
         execute_ydbd(self.cluster, "token", ['admin', 'bs', 'config', 'invoke', '--proto', define_ddisk_pool])
+        NbsTestBase._ddisk_pool_ready = True
 
     def _dstool_nbs_partition_json(self, args, operation_name, disk_id):
         """
@@ -475,8 +483,8 @@ class NbsTestBase:
         actor_id,
         write_rate,
         read_rate,
-        duration=10,
-        io_depth=32,
+        duration=5,
+        io_depth=8,
         load_type="LOAD_TYPE_RANDOM",
         range_start=0,
         range_end=DEFAULT_DISK_BLOCKS_COUNT - 1,
@@ -526,12 +534,20 @@ class NbsTestBase:
 
         logger.debug(f"Load actor start response: {result}")
 
-        # Wait for test to complete (duration + buffer)
-        time.sleep(duration + 2)
-
-        # Get results
-        results_response = requests.get(f'{http_endpoint}/actors/load?mode=results')
-        assert results_response.status_code == 200
+        # The actor runs for `duration` seconds. Then poll briefly for the
+        # results panel instead of always sleeping an extra buffer.
+        time.sleep(duration)
+        results_deadline = time.time() + 3
+        results_response = None
+        while True:
+            results_response = requests.get(f'{http_endpoint}/actors/load?mode=results')
+            assert results_response.status_code == 200
+            if uuid in results_response.text and 'TestResults' in results_response.text:
+                break
+            assert time.time() < results_deadline, (
+                f"Load test results for {uuid} did not appear"
+            )
+            time.sleep(0.5)
 
         logger.debug(f"Load actor results response: {results_response.text}")
 

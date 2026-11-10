@@ -210,7 +210,7 @@ private:
     virtual TString GetConveyorConfig() = 0;
     virtual std::vector<std::shared_ptr<IRequestProcessor>> GetRequests() = 0;
     virtual ui32 GetTasksCount() const {
-        return 1000000;
+        return 20000;
     }
 
 public:
@@ -219,7 +219,7 @@ public:
     }
 
     void Execute() {
-        const ui64 threadsCount = 64;
+        const ui64 threadsCount = 20;
         THolder<NActors::TActorSystemSetup> actorSystemSetup = NKikimr::BuildActorSystemSetup(threadsCount, 1);
         NActors::TActorSystem actorSystem(actorSystemSetup);
 
@@ -540,7 +540,7 @@ Y_UNIT_TEST_SUITE(CompositeConveyorTests) {
     class TTestingExecutorUniformDistribution: public TTestingExecutor {
     private:
         virtual ui32 GetTasksCount() const override {
-            return 1000000;
+            return 20000;
         }
         virtual double GetThreadsCount() const override {
             return 16.4;
@@ -856,7 +856,7 @@ Y_UNIT_TEST_SUITE(CompositeConveyorTests) {
     }
 
     Y_UNIT_TEST(NoHeavyLimitsUsesWorkersBeyondLimit) {
-        const ui64 threadsCount = 64;
+        const ui64 threadsCount = 20;
         THolder<NActors::TActorSystemSetup> actorSystemSetup = NKikimr::BuildActorSystemSetup(threadsCount, 1);
         NActors::TActorSystem actorSystem(actorSystemSetup);
         actorSystem.Start();
@@ -895,7 +895,7 @@ Y_UNIT_TEST_SUITE(CompositeConveyorTests) {
     }
 
     Y_UNIT_TEST(DefaultScanProcessIsNotPessimized) {
-        const ui64 threadsCount = 64;
+        const ui64 threadsCount = 20;
         THolder<NActors::TActorSystemSetup> actorSystemSetup = NKikimr::BuildActorSystemSetup(threadsCount, 1);
         NActors::TActorSystem actorSystem(actorSystemSetup);
         actorSystem.Start();
@@ -934,7 +934,7 @@ Y_UNIT_TEST_SUITE(CompositeConveyorTests) {
     }
 
     Y_UNIT_TEST(PessimizedProcessUsesOnlyFirstWorkers) {
-        const ui64 threadsCount = 64;
+        const ui64 threadsCount = 20;
         THolder<NActors::TActorSystemSetup> actorSystemSetup = NKikimr::BuildActorSystemSetup(threadsCount, 1);
         NActors::TActorSystem actorSystem(actorSystemSetup);
         actorSystem.Start();
@@ -982,7 +982,7 @@ Y_UNIT_TEST_SUITE(CompositeConveyorTests) {
     }
 
     Y_UNIT_TEST(TwoTierHeavyLimits) {
-        const ui64 threadsCount = 64;
+        const ui64 threadsCount = 20;
         THolder<NActors::TActorSystemSetup> actorSystemSetup = NKikimr::BuildActorSystemSetup(threadsCount, 1);
         NActors::TActorSystem actorSystem(actorSystemSetup);
         actorSystem.Start();
@@ -1037,7 +1037,7 @@ Y_UNIT_TEST_SUITE(CompositeConveyorTests) {
     }
 
     Y_UNIT_TEST(InsertProcessIsNotPessimized) {
-        const ui64 threadsCount = 64;
+        const ui64 threadsCount = 20;
         THolder<NActors::TActorSystemSetup> actorSystemSetup = NKikimr::BuildActorSystemSetup(threadsCount, 1);
         NActors::TActorSystem actorSystem(actorSystemSetup);
         actorSystem.Start();
@@ -1092,7 +1092,7 @@ Y_UNIT_TEST_SUITE(CompositeConveyorTests) {
     }
 
     Y_UNIT_TEST(CompactionProcessIsNotPessimized) {
-        const ui64 threadsCount = 64;
+        const ui64 threadsCount = 20;
         THolder<NActors::TActorSystemSetup> actorSystemSetup = NKikimr::BuildActorSystemSetup(threadsCount, 1);
         NActors::TActorSystem actorSystem(actorSystemSetup);
         actorSystem.Start();

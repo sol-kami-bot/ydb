@@ -17,6 +17,7 @@
 #include <string.h>
 #include <time.h>
 
+#include <algorithm>
 #include <cmath>
 #include <limits>
 #include <string>
@@ -231,6 +232,13 @@ int main(int ac, char* av[]) {
   size_t nTest = 0;
   size_t nFail = 0;
 
+  // PR/CI: only {1, min(4, MAX_THREAD_QTY)}, skipping the duplicate when they match.
+  vector<size_t> threadQtys{1};
+  const size_t cappedThreadQty = std::min<size_t>(4, MAX_THREAD_QTY);
+  if (cappedThreadQty != threadQtys.front()) {
+    threadQtys.push_back(cappedThreadQty);
+  }
+
   try {
     for (int bTestReload = 0; bTestReload < 2; ++bTestReload) {
       cout << "Testing index reload: " << (bTestReload == 1) << endl;
@@ -264,7 +272,7 @@ int main(int ac, char* av[]) {
           }
 
           if (!vTestCases.empty())  { // Not all combinations of spaces, data sets, and search types are non-empty
-            for (size_t threadQty = 1; threadQty <= MAX_THREAD_QTY; ++threadQty) {
+            for (size_t threadQty : threadQtys) {
               nTest += vTestCases.size();
               nFail += RunOneTest(vTestCases, 
                                   bTestReload == 1,
@@ -301,7 +309,7 @@ int main(int ac, char* av[]) {
           }
 
           if (!vTestCases.empty())  { // Not all combinations of spaces, data sets, and search types are non-empty
-            for (size_t threadQty = 1; threadQty <= MAX_THREAD_QTY; ++threadQty) {
+            for (size_t threadQty : threadQtys) {
               nTest += vTestCases.size();
               nFail += RunOneTest(vTestCases, 
                                   bTestReload == 1,

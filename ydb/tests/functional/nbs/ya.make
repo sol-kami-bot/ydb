@@ -19,7 +19,7 @@ SIZE(MEDIUM)
 TIMEOUT(600)
 REQUIREMENTS(cpu:4)
 REQUIREMENTS(ram:16)
-FORK_SUBTESTS()
+# Session fixture boots the cluster once per chunk. Forking each test would boot it again.
 SPLIT_FACTOR(3)
 
 DEPENDS(

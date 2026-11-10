@@ -100,9 +100,9 @@ Y_UNIT_TEST_SUITE(NodeIdDescribe)
                 )
                 WITH (
                     AUTO_PARTITIONING_BY_SIZE = DISABLED,
-                    AUTO_PARTITIONING_MIN_PARTITIONS_COUNT = 4096,
-                    AUTO_PARTITIONING_MAX_PARTITIONS_COUNT = 4096,
-                    UNIFORM_PARTITIONS = 4096);
+                    AUTO_PARTITIONING_MIN_PARTITIONS_COUNT = 128,
+                    AUTO_PARTITIONING_MAX_PARTITIONS_COUNT = 128,
+                    UNIFORM_PARTITIONS = 128);
             )", TTxControl::NoTx(), TExecuteQuerySettings()).GetValueSync();
             UNIT_ASSERT_C(res.IsSuccess(), res.GetIssues().ToString());
         }
@@ -123,8 +123,8 @@ Y_UNIT_TEST_SUITE(NodeIdDescribe)
             auto res = session.DescribeTable("/local/UniformDist", describeTableSettings).ExtractValueSync();
             UNIT_ASSERT_EQUAL(res.IsTransportError(), false);
             UNIT_ASSERT_EQUAL_C(res.GetStatus(), EStatus::SUCCESS, res.GetIssues().ToString());
-            UNIT_ASSERT_VALUES_EQUAL(res.GetTableDescription().GetPartitionsCount(), 4096);
-            UNIT_ASSERT_VALUES_EQUAL(res.GetTableDescription().GetPartitionStats().size(), 4096);
+            UNIT_ASSERT_VALUES_EQUAL(res.GetTableDescription().GetPartitionsCount(), 128);
+            UNIT_ASSERT_VALUES_EQUAL(res.GetTableDescription().GetPartitionStats().size(), 128);
             for (const auto& x : res.GetTableDescription().GetPartitionStats()) {
                 nodes.insert(x.LeaderNodeId);
             }

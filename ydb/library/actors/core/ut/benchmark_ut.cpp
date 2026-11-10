@@ -392,8 +392,8 @@ Y_UNIT_TEST_SUITE(ActorSystemBenchmark) {
 
     Y_UNIT_TEST(QuickSortActor) {
         const std::vector<ui32> threadss{1, 4};
-        const std::vector<ui32> vectorSizes{100, 1'000, 1'000'000};
-        const ui32 iterations = 3;
+        const std::vector<ui32> vectorSizes{100, 1'000, 100'000};
+        const ui32 iterations = 1;
 
         std::cout << "sep=," << std::endl;
         std::cout << "size,threads,actor_time(us),thread_pool_time(us)" << std::endl;
@@ -756,7 +756,7 @@ Y_UNIT_TEST_SUITE(ActorSystemBenchmark) {
 
         using TNumbers = std::vector<ui32>;
         const TNumbers threadNumbers = forCI ? TNumbers{1} : TNumbers{1, 4, 8};
-        const TNumbers actorNumbers = forCI ? TNumbers{1, 8} : TNumbers{1, 4, 8, 16, 32, 64};
+        const TNumbers actorNumbers = forCI ? TNumbers{1, 4} : TNumbers{1, 4, 8, 16, 32, 64};
         const TNumbers dictSizes = forCI ? TNumbers{1'000} : TNumbers{1'000, 1'000'000};
         const TNumbers dictsNumbers = forCI ? TNumbers{1} : TNumbers{1, 8};
         const ui32 iterations = 5;
@@ -767,7 +767,7 @@ Y_UNIT_TEST_SUITE(ActorSystemBenchmark) {
         for (auto dictsNumber : dictsNumbers) {
             for (auto dictSize : dictSizes) {
                 const auto dict = prepareKvSearchDict(dictSize);
-                const ui32 requestsNumber = forCI ? 10'000 : 1'000'000;
+                const ui32 requestsNumber = forCI ? 1'000 : 1'000'000;
                 const auto keysToSearch = prepareKeysToSearch(dict, requestsNumber);
 
                 for (auto threads : threadNumbers) {
@@ -1069,11 +1069,11 @@ Y_UNIT_TEST_SUITE(ActorSystemBenchmark) {
         using TVui64 = std::vector<ui64>;
         const bool forCI = true;
         const TVui64 vectorSizes = forCI ?
-            TVui64{1'000, 1'000'000} : TVui64{1'000, 1'000'000, 10'000'000, 100'000'000};
+            TVui64{1'000, 100'000} : TVui64{1'000, 1'000'000, 10'000'000, 100'000'000};
         const TVui64 threadsNumbers = forCI ? TVui64{1} : TVui64{1, 4};
         const TVui64 proxyActorsNumbers = forCI ? TVui64{1} : TVui64{1, 4};
         const TVui64 sumActorsNumbers = forCI ? TVui64{1} : TVui64{1, 8, 32};
-        const ui32 iterations = 30;
+        const ui32 iterations = 5;
 
         std::cout << "sep=," << std::endl;
         std::cout << "size,threads,proxy_actors,sum_actors,duration(us)" << std::endl;

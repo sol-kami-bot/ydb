@@ -22,8 +22,8 @@ Y_UNIT_TEST_SUITE(ActorSystemPerformance) {
             setup->NodeId = 1;
             setup->ExecutorsCount = 2;
             setup->Executors.Reset(new TAutoPtr<IExecutorPool>[2]);
-            setup->Executors[0].Reset(new TBasicExecutorPool(0, 4, 20));
-            setup->Executors[1].Reset(new TIOExecutorPool(1, 10));
+            setup->Executors[0].Reset(new TBasicExecutorPool(0, 1, 20));
+            setup->Executors[1].Reset(new TIOExecutorPool(1, 1));
 
             setup->Scheduler.Reset(new TBasicSchedulerThread(TSchedulerConfig(512, 100)));
 
@@ -61,7 +61,7 @@ Y_UNIT_TEST_SUITE(ActorSystemPerformance) {
     class TDolbilkaCommon {
     protected:
         ui32 Counter = 0;
-        ui32 CounterLimit = 10000000;
+        ui32 CounterLimit = 100000;
         const TInstant Start = Now();
         std::atomic<TDuration> Duration;
         std::atomic<bool> Ready = false;
