@@ -10,7 +10,7 @@ _DEFAULT_TIMEOUT = int(os.environ.get('PYTEST_TIMEOUT') or 60)
 
 @pytest.fixture(scope='session')
 def nbs_cluster():
-    """One cluster per pytest session (one SPLIT_FACTOR chunk)."""
+    """One cluster per pytest session (whole suite process)."""
     cluster = boot_nbs_cluster()
     try:
         yield cluster

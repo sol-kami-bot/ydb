@@ -115,8 +115,8 @@ Caveats учёта:
 ### 5. `ydb/tests/functional/nbs` — ~2.75×, hot ~151s, cgroup max ~12.5c
 
 - **Почему:** каждый тест (function-scoped) поднимает **новый** кластер `MIRROR_3_DC` (9 static + dynamic) + DDisk pool; load-actor `IoDepth: 32` на 10–20s при `sleep(duration+2)`. Пик 9–12.5c при `cpu:4`. F*-фикстуры уже умеют session-cluster — этот target нет.
-- **Код:** `ydb/tests/functional/nbs/common.py`, `test_nbs.py`, `ya.make` (`FORK`+`SPLIT_FACTOR(3)`, `cpu:4`)
-- **Сделать:** session-scoped cluster как в F*; `Erasure.NONE` где не нужны 3 DC; урезать io_depth/duration; один load-case на кластер; слот после снижения пика.
+- **Код:** `ydb/tests/functional/nbs/common.py`, `test_nbs.py`, `ya.make` (`cpu:4`)
+- **Сделать:** session-scoped cluster как в F* **без** `FORK`/`SPLIT` (`SPLIT_FACTOR` без `FORK_*` → configure fail); `Erasure.NONE` где не нужны 3 DC; урезать io_depth/duration; один load-case на кластер.
 
 ### 6. `ydb/core/blobstorage/groupinfo/ut` ch9 (partlayout) — ratio ~1.2×, абсолют ~40c
 

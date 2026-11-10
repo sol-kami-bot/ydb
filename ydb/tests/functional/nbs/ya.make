@@ -19,8 +19,8 @@ SIZE(MEDIUM)
 TIMEOUT(600)
 REQUIREMENTS(cpu:4)
 REQUIREMENTS(ram:16)
-# Session fixture boots the cluster once per chunk. Forking each test would boot it again.
-SPLIT_FACTOR(3)
+# No FORK/SPLIT: session-scoped nbs_cluster boots once for the whole suite
+# (same pattern as F* suites). SPLIT_FACTOR requires FORK_* and would break configure.
 
 DEPENDS(
     ydb/apps/dstool
