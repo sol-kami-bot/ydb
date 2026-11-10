@@ -31,7 +31,7 @@ NBS_CLUSTER_NODES = 5
 
 
 def boot_nbs_cluster():
-    """Boot one NBS cluster. The session fixture shares it across a chunk."""
+    """Boot one NBS cluster. The session fixture is provided per pytest session (per forked process with FORK_SUBTESTS)."""
     configurator = KikimrConfigGenerator(
         erasure=Erasure.NONE,
         nodes=NBS_CLUSTER_NODES,

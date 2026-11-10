@@ -19,8 +19,10 @@ SIZE(MEDIUM)
 TIMEOUT(600)
 REQUIREMENTS(cpu:4)
 REQUIREMENTS(ram:16)
-# No FORK/SPLIT: session-scoped nbs_cluster boots once for the whole suite
-# (same pattern as F* suites). SPLIT_FACTOR requires FORK_* and would break configure.
+# FORK_SUBTESTS required together with SPLIT_FACTOR. Each forked process still
+# gets one cluster via session-scoped nbs_cluster; CPU win is lighter topology/load.
+FORK_SUBTESTS()
+SPLIT_FACTOR(3)
 
 DEPENDS(
     ydb/apps/dstool
